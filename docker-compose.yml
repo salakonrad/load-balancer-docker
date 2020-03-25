@@ -1,0 +1,46 @@
+version: '3'
+services:  
+  web1:
+    container_name: web1
+    build: .
+    ports:
+        - "8080:80"
+    volumes:
+      - ./website1:/usr/share/nginx/html
+      - ./web1.conf:/etc/nginx/conf.d/web1.conf
+    links:
+      - php1
+
+  php1:
+    container_name: php1
+    image: php:7-fpm
+    volumes:
+      - ./website1:/usr/share/nginx/html
+
+  web2:
+    container_name: web2
+    build: .
+    ports:
+        - "8081:80"
+    volumes:
+      - ./website2:/usr/share/nginx/html
+      - ./web2.conf:/etc/nginx/conf.d/web2.conf
+    links:
+      - php2
+
+  php2:
+    container_name: php2
+    image: php:7-fpm
+    volumes:
+      - ./website2:/usr/share/nginx/html
+  
+  lb:
+    container_name: lb
+    build: .
+    ports:
+      - "80:80"
+    volumes:
+      - ./lb.conf:/etc/nginx/conf.d/lb.conf
+    depends_on:
+      - web1
+      - web2
